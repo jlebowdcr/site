@@ -7,249 +7,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts alternatives -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Fira Sans', sans-serif;
-            background-color: #f8f9fa;
-            color: #343a40;
-        }
-        h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
-            font-family: 'Lora', serif;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        .card {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
-            border-radius: 0.75rem;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease;
-        }
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <header class="bg-white shadow-sm py-4">
+    <header class="site-header shadow-sm py-2">
         <nav class="container flex justify-between items-center">
-            <a href="#" class="flex items-center space-x-2 text-gray-800">
-                <img src="DS_Logo.png" alt="Delta Strategies Logo" class="h-16 w-16"> <span class="text-2xl font-bold">Delta Strategies</span>
+            <a href="index.html" class="flex items-center space-x-2 text-white">
+                <img src="DS_logo_simple.png" alt="Delta Strategies Logo" class="h-14 w-auto"> <span class="text-2xl font-bold">Delta Strategies</span>
             </a>
             <div class="hidden md:flex space-x-6">
-                <a href="#home" class="text-gray-600 hover:text-blue-600 font-medium">Home</a>
-                <a href="#about" class="text-gray-600 hover:text-blue-600 font-medium">About Us</a>
-                <a href="#services" class="text-gray-600 hover:text-blue-600 font-medium">Services</a>
-                <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium">Contact</a>
+                <a href="index.html" class="text-blue-100 hover:text-white font-medium">Home</a>
+                <a href="about.html" class="text-blue-100 hover:text-white font-medium">About Us</a>
+                <a href="services.html" class="text-blue-100 hover:text-white font-medium">Services</a>
+                <a href="contact.html" class="text-blue-100 hover:text-white font-medium">Contact</a>
             </div>
-            <button id="mobile-menu-button" class="md:hidden text-gray-600 focus:outline-none">
+            <button id="mobile-menu-button" class="md:hidden text-white focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden bg-white py-2 shadow-md">
-            <a href="#home" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
-            <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">About Us</a>
-            <a href="#services" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Services</a>
-            <a href="#contact" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Contact</a>
+        <div id="mobile-menu" class="hidden md:hidden site-mobile-menu py-2 shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-white hover:bg-white/10">Home</a>
+            <a href="about.html" class="block px-4 py-2 text-white hover:bg-white/10">About Us</a>
+            <a href="services.html" class="block px-4 py-2 text-white hover:bg-white/10">Services</a>
+            <a href="contact.html" class="block px-4 py-2 text-white hover:bg-white/10">Contact</a>
         </div>
     </header>
 
-    <section id="home" class="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-20 md:py-32 rounded-b-xl shadow-lg">
+    <section id="home" class="hero-section text-white w-full">
         <div class="container text-center">
-            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">Empowering Smarter Investment Decisions</h1>
-            <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-extrabold leading-[100px] mb-6">Empowering Smarter<br>Investment Decisions</h1>
+            <p class="text-lg md:text-xl leading-relaxed mb-8 max-w-3xl mx-auto">
                 Delta Strategies provides cutting-edge market intelligence and strategic insights to navigate complex financial landscapes.
             </p>
-            <div class="space-x-4">
-                <a href="#services" class="btn-primary inline-block">Explore Our Services</a>
-                <a href="#contact" class="btn-secondary inline-block">Get in Touch</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="py-16 md:py-24 bg-white">
-        <div class="container">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">About Delta Strategies</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                <div>
-                    <p class="text-lg leading-relaxed mb-6">
-                        At Delta Strategies, we are dedicated to providing unparalleled risk analytics, treasury, margin, cash and financing consultancy and advisory services.
-                    </p>
-                    <p class="text-lg leading-relaxed mb-6">
-                        We partner with institutional investors, hedge funds and corporate clients to enhance decision-making, optimize portfolios and identify emerging opportunities in global markets. Our commitment to accuracy, integrity and innovation sets us apart. We specialise in delivering actionable optimisation solutions for portfolio and trade structures, supporting asset managers across four continents.
-                    </p>
-                    <p class="text-lg leading-relaxed">
-                        Delta Strategies was founded by Sadat Mannan with over 25 years of experience in global financial industry, including 19 years at Barclays Investment Bank in London and New York.
-                    </p>
-                </div>
-                <div class="p-6 bg-gray-50 card">
-                    <h3 class="text-2xl font-semibold mb-4 text-blue-700">Our Mission</h3>
-                    <p class="text-gray-700 text-lg leading-relaxed">
-                        To enable Treasurers and CIOs to optimise their Prime Broker, OTC Derivative and Exchange relationships; leading to significant enhancements in returns, enhancing yield on cash balances, reducing financing costs, improved Sharpe ratios and reduced costs through cross-asset portfolio optimisation and collateral savings.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16 md:py-24 bg-gray-100">
-    <div class="container text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-12">Our Approach</h2>
-        <div class="flex flex-col items-center">
             <div>
-                <img src="raptor_engines.jpg" alt="Raptor Engines" class="mx-auto mb-8 rounded-lg shadow-md">
-                <h3 class="text-2xl font-semibold mb-4">Incremental Efficiency Gains</h3>
-                <p class="text-lg leading-relaxed text-gray-700">
-                    We believe in achieving optimisation through incremental efficiency gains, similar to the continuous improvements seen in engineering projects like SpaceX's Raptor engines.
-                </p>
-                    <img src="SCurve.png" alt="S-Curve" class="mx-auto mt-6 mb-8 rounded-lg shadow-md">
-
-                
-              </div>
-        </div>
-        <div class="mt-20">
-            <h2 class="text-3xl md:text-4xl font-bold mb-12">Our Operating Principles</h2>
-            <div class="flex flex-col items-center">
-                <img src="colin_chapman_quote.png" alt="Colin Chapman Quote" class="mx-auto mb-8 rounded-lg shadow-md">
-                <img src="team_lotus_car.jpg" alt="Team Lotus Car" class="mx-auto rounded-lg shadow-md">
-                <p class="text-lg leading-relaxed text-gray-700 mt-8">
-                    Our operating principles are inspired by the philosophy of "Simplify, and add lightness" by Colin Chapman, founder of Lotus Cars.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
-<hr class="my-12 border-gray-300">
-<section id="services" class="py-16 md:py-24 bg-gray-100">
-    <div class="container">
-        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Our Services</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-						<svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v4a2 2 0 002 2h4m-4 0v4a2 2 0 002 2h4a2 2 0 002-2v-4m-2-4h-4m2-4V4a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h2"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Margin and Cost Replication</h3>
-                    <p class="text-gray-700">
-                        Accurately replicate and analyze margin calculations and associated costs across various financial instruments.
-                    </p>
-                </div>
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Margin Optimisation</h3>
-                    <p class="text-gray-700">
-                        Strategies and tools to minimize margin requirements while maximizing capital efficiency.
-                    </p>
-                </div>
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Portfolio Manager Attribution</h3>
-                    <p class="text-gray-700">
-                        Detailed analysis to attribute portfolio performance to specific managers and strategies.
-                    </p>
-                </div>
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-                       <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                </div>
-                    <h3 class="text-xl font-semibold mb-4">Exchange and Commodity Margin</h3>
-                    <p class="text-gray-700">
-                        Expertise in exchange-traded and commodity-specific margin requirements and regulations.
-                    </p>
-                </div>
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Uncleared Margin</h3>
-                    <p class="text-gray-700">
-                        Guidance and solutions for derivative margin forecasting and stress testing.
-                    </p>
-                </div>
-                <div class="bg-white p-8 card text-center">
-                    <div class="text-blue-600 mb-4">
-                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-4">Cash Reporting</h3>
-                    <p class="text-gray-700">
-                        Comprehensive cash flow reporting and analysis for improved liquidity management.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-<hr class="my-12 border-gray-300">
-    <section id="contact" class="py-16 md:py-24 bg-gray-100 rounded-t-xl shadow-lg">
-        <div class="container">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Contact Us</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                <div class="bg-white p-8 card">
-                    <h3 class="text-2xl font-semibold mb-6 text-blue-700">Get in Touch</h3>
-                    <form id="contactForm">
-                        <div class="mb-4">
-                            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                            <input type="text" id="name" name="name" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your Name">
-                        </div>
-                        <div class="mb-4">
-                            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                            <input type="email" id="email" name="email" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@example.com">
-                        </div>
-                        <div class="mb-6">
-                            <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Message</label>
-                            <textarea id="message" name="message" rows="6" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your message..."></textarea>
-                        </div>
-                        <button type="button" id="submitContactForm" class="btn-primary w-full">Send Message</button>
-                    </form>
-                </div>
-                <div class="p-8 bg-gray-50 card">
-                    <h3 class="text-2xl font-semibold mb-6 text-blue-700">Our Office</h3>
-                    <p class="text-gray-700 mb-4">
-                        <strong>Delta Strategies</strong><br>
-                        Level 39<br>
-						1 Canada Square<br>
-                        London, E14 5AB<br>
-                        United Kingdom
-                    </p>
-                    <p class="text-gray-700 mb-4">
-                        <strong>Phone:</strong> +44 20 7183 1860<br>
-                        <strong>Email:</strong> info@deltacapitalresearch.com
-                    </p>
-                    <div class="mt-8">
-                        <h3 class="text-2xl font-semibold mb-4 text-blue-700">Connect With Us</h3>
-                        <div class="flex space-x-4">
-                            <a href="https://www.linkedin.com/company/deltastrategiescapital/about/" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-blue-600">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <a href="contact.html" class="btn-primary inline-block">Get in Touch</a>
             </div>
         </div>
     </section>
 
-    <footer class="bg-gray-800 text-white py-8 rounded-t-xl">
+    <footer class="bg-gray-800 text-white py-6">
         <div class="container text-center md:flex md:justify-between md:items-center">
             <p>&copy; 2026 Delta Strategies. All rights reserved.</p>
             <div class="flex justify-center space-x-6 mt-4 md:mt-0">
@@ -259,35 +56,6 @@
         </div>
     </footer>
 
-    <script>
-        // JavaScript for mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Close mobile menu when a link is clicked
-        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-
-        // JavaScript for Contact Form Email Submission
-        document.getElementById('submitContactForm').addEventListener('click', function() {
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            const subject = encodeURIComponent(`Contact from Website: ${name}`);
-            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-            const mailtoLink = `mailto:info@deltacapitalresearch.com?subject=${subject}&body=${body}`;
-
-            window.location.href = mailtoLink;
-        });
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>

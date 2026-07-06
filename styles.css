@@ -1,0 +1,165 @@
+body {
+    font-family: 'Fira Sans', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
+    font-family: 'Lora', serif;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    border-radius: 0.75rem;
+}
+.btn-primary {
+    background-color: #174a7c;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #123c66;
+}
+
+/* Site-wide sticky nav bar. Solid white background with dark navy text,
+   matching the hero/about sections' navy so the brand color still reads
+   through the header even though the background itself is now light. */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+.site-header a,
+.site-header span,
+.site-header button {
+    color: #0b1f3a;
+}
+.site-header a:hover {
+    color: #174a7c;
+}
+.site-mobile-menu {
+    background-color: #ffffff;
+}
+.site-mobile-menu a {
+    color: #0b1f3a;
+}
+.site-mobile-menu a:hover {
+    background-color: rgba(11, 31, 58, 0.08);
+}
+
+/* Full-height homepage hero. 72px subtracted is the sticky nav's
+   rendered height, so hero + nav together fill exactly one viewport. */
+.hero-section {
+    background-color: #0b1f3a;
+    min-height: calc(100vh - 72px);
+    display: flex;
+    align-items: center;
+}
+
+/* Grows to fill any leftover space between header and footer, the same
+   way .hero-section's explicit min-height does on the homepage, so the
+   dark background always covers the full viewport regardless of content
+   length or window size. */
+.about-page,
+#contact {
+    flex: 1 0 auto;
+}
+
+.about-page {
+    background-color: #0b1f3a;
+    color: #ffffff;
+}
+
+/* Stacks all three About-page panels on top of one another in the same
+   grid cell. All three (even hidden ones) contribute to sizing this
+   cell, so the box auto-sizes to the tallest panel and every panel ends
+   up exactly that same size, whichever one is showing. */
+.about-panels-stack {
+    display: grid;
+}
+
+/* "Icey", glossy glass-card treatment for the About page's tab content,
+   so the active panel's text reads as a distinct surface against the
+   dark navy background. Panels share one grid cell (see
+   .about-panels-stack above) and use visibility (not display) to hide,
+   so inactive panels still count toward that cell's height. */
+.about-tab-panel {
+    grid-column: 1;
+    grid-row: 1;
+    visibility: hidden;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.about-tab-panel.about-panel-active {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Same glass-card treatment as .about-tab-panel, for the Contact page's
+   form and office-info blocks, minus the tab-stack-specific positioning
+   and visibility toggling (these aren't part of a tabbed stack). */
+.contact-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Click-to-switch tab labels on the About page's left column. */
+.about-tab-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 4px solid transparent;
+    padding: 0.5rem 0 0.5rem 1rem;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+.about-tab-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+.about-tab-btn.about-tab-active {
+    color: #ffffff;
+    border-left-color: #174a7c;
+}
+.about-tab-number {
+    display: inline-block;
+    min-width: 1.75rem;
+    color: #93c5fd;
+    font-variant-numeric: tabular-nums;
+}
+.about-tab-btn.about-tab-active .about-tab-number {
+    color: #ffffff;
+}
+
+footer {
+    flex-shrink: 0;
+}
