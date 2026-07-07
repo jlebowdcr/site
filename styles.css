@@ -64,6 +64,25 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     min-height: calc(100vh - 72px);
     display: flex;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Low-poly triangle mesh (hero-mesh.js draws into this). Every instance
+   fills its immediate parent, which must be position:relative with a
+   defined size — .hero-section on the home page, .about-mesh-box on the
+   About page. Pointer-events stay off so the mouse-parallax listener on
+   the parent itself keeps receiving events. */
+.js-mesh-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
 }
 
 /* Grows to fill any leftover space between header and footer, the same
@@ -76,90 +95,575 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
 }
 
 .about-page {
+    background-color: #ffffff;
+    color: #0b1f3a;
+}
+
+/* Contact page also carries .about-page (for the shared flex-grow layout
+   behavior above), which would otherwise leave it with a white background
+   its light-text contact panels weren't designed for. Restore navy. */
+#contact {
     background-color: #0b1f3a;
     color: #ffffff;
 }
 
-/* Stacks all three About-page panels on top of one another in the same
-   grid cell. All three (even hidden ones) contribute to sizing this
-   cell, so the box auto-sizes to the tallest panel and every panel ends
-   up exactly that same size, whichever one is showing. */
-.about-panels-stack {
-    display: grid;
-}
-
-/* "Icey", glossy glass-card treatment for the About page's tab content,
-   so the active panel's text reads as a distinct surface against the
-   dark navy background. Panels share one grid cell (see
-   .about-panels-stack above) and use visibility (not display) to hide,
-   so inactive panels still count toward that cell's height. */
-.about-tab-panel {
-    grid-column: 1;
-    grid-row: 1;
-    visibility: hidden;
-    pointer-events: none;
+/* Services page reuses .about-page's layout/flex-grow behavior but wants
+   the full animated triangle mesh as its background instead (same as the
+   home hero) — the #services ID override beats .about-page's white
+   regardless of stylesheet order. Its cards already use light text
+   (text-white/text-gray-300) expecting a dark ground. */
+#services {
+    position: relative;
+    overflow: hidden;
+    background-color: #0b1f3a;
+    color: #ffffff;
+    min-height: calc(100vh - 72px);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    justify-content: center;
 }
-.about-tab-panel.about-panel-active {
-    visibility: visible;
-    pointer-events: auto;
+.services-content {
+    position: relative;
+    z-index: 1;
 }
 
-/* Same glass-card treatment as .about-tab-panel, for the Contact page's
-   form and office-info blocks, minus the tab-stack-specific positioning
-   and visibility toggling (these aren't part of a tabbed stack). */
-.contact-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* Click-to-switch tab labels on the About page's left column. */
-.about-tab-btn {
-    display: block;
+/* Matches .about-hero-layout's max-width and horizontal padding exactly
+   (rather than the site-wide .container + inner px-* wrapper this used
+   to sit in), so "Our Mission" etc. line up on the same left edge as
+   "About Us" in the hero above. */
+.about-sections {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 0 clamp(1rem, 5vw, 4rem);
     width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    border-left: 4px solid transparent;
-    padding: 0.5rem 0 0.5rem 1rem;
+}
+
+/* Mission/Approach/Principles as one card: the triangle mesh fills the
+   whole background, and a white collapsible table sits on top of it. */
+.about-modules-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 620px;
+    padding: clamp(2rem, 6vw, 4.5rem);
+    background-color: #0b1f3a;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.about-modules-section .js-mesh-canvas {
+    z-index: 0;
+}
+
+.modules-table {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 760px;
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    /* Without this, the white cursor set on the parent .about-modules-section
+       (navy mesh) would just inherit straight through onto this white table. */
+    cursor: var(--cursor-blue);
+}
+.modules-row + .modules-row {
+    border-top: 1px solid #cbd5e1;
+}
+
+/* Row header is the click target; only the title shows until opened.
+   cursor is set after "all: unset" resets it back to inherit. */
+.modules-row-toggle {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 1.75rem 2.5rem;
+    cursor: var(--cursor-blue);
+}
+.modules-row-toggle h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0b1f3a;
     font-family: 'Lora', serif;
-    font-size: 1rem;
+}
+.modules-row-arrow {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #174a7c;
+    transition: transform 650ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.collapsible-row.is-open .modules-row-arrow {
+    transform: rotate(90deg);
+}
+
+/* Collapsed panel animates open via the 0fr -> 1fr grid-row trick, which
+   (unlike max-height) animates to the content's real height exactly. A
+   slower, symmetric ease-in-out reads as a glide rather than a quick drop. */
+.modules-row-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 650ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.collapsible-row.is-open .modules-row-panel {
+    grid-template-rows: 1fr;
+}
+.modules-row-panel-inner {
+    overflow: hidden;
+}
+.modules-row-panel p {
+    margin: 0;
+    padding: 0 2.5rem 1.75rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+/* Services page: all six services in one white rectangle, laid out side
+   by side (a horizontal accordion, distinct from the About page's
+   vertical .modules-table). Clicking a segment (main.js, [data-seg])
+   grows it — the description fades in and the icon appears bottom-left —
+   while the others compress to equal-width, title-only columns. Padding,
+   title size/position, and layout never change between the two states;
+   only width changes, and clicking the open one again collapses it back. */
+/* Back to filling its container exactly (no overflow past the edges),
+   so its left edge lines up with the "Our Services" heading above it and
+   the right-side gap matches — both flush with the same container. */
+.services-accordion {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: clamp(384px, 66vh, 768px);
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    cursor: var(--cursor-blue);
+}
+.services-seg {
+    flex: 1 1 0%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.75rem 1.5rem;
+    cursor: var(--cursor-blue);
+    position: relative;
+    overflow: hidden;
+    transition: flex-grow 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.services-seg + .services-seg {
+    border-top: 1px solid #cbd5e1;
+}
+.services-seg.is-open {
+    flex-grow: 4;
+}
+
+/* Matches the About page table's .modules-row-toggle h3 exactly
+   (1.15rem/700/navy) — font-family: Lora comes for free since h3 is
+   already covered by the site-wide heading rule. */
+.services-seg-title {
+    margin: 0;
+    width: 100%;
+    padding-right: 2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0b1f3a;
+    text-align: left;
+}
+
+/* Matches the About page table's .modules-row-panel p exactly
+   (0.95rem/1.6/#4b5563). */
+.services-seg-desc {
+    margin: 0.85rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+    opacity: 0;
+    max-width: 46ch;
+    transition: opacity 300ms ease;
+}
+.services-seg.is-open .services-seg-desc {
+    opacity: 1;
+    transition: opacity 500ms ease 1100ms;
+}
+
+/* Arrow sits top-right, level with the title — same position (relative
+   to the header text) and same rotate-to-point-down-on-click behavior
+   as the About page's table rows. Always visible as the click affordance. */
+.services-seg-arrow {
+    position: absolute;
+    top: 1.75rem;
+    right: 1.5rem;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #174a7c;
+    transition: transform 650ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.services-seg.is-open .services-seg-arrow {
+    transform: rotate(90deg);
+}
+
+/* Icons stay hidden until a segment opens, then appear pinned to its
+   bottom-left corner (not inline with the title, so the title's own
+   position never shifts). */
+.services-seg-icon {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 1.75rem;
+    color: #174a7c;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+}
+.services-seg.is-open .services-seg-icon {
+    opacity: 1;
+    transition: opacity 500ms ease 1100ms;
+}
+@media (prefers-reduced-motion: reduce) {
+    .services-seg,
+    .services-seg-arrow,
+    .services-seg-icon,
+    .services-seg-desc {
+        transition: none;
+    }
+}
+
+/* Tall spacer giving the sticky hero below room to stay pinned on screen
+   while the user scrolls through the two staged reveals in the right
+   column; it releases once this wrapper's extra height is used up,
+   continuing into "Our Mission" in the sibling .about-page below. */
+.about-hero-pin-wrap {
+    position: relative;
+    height: 210vh;
+}
+
+/* Pinned About intro — position:sticky keeps it visually fixed through
+   both staged reveals before releasing into the rest of the page. */
+.about-hero-section {
+    background-color: #0b1f3a;
+    color: #ffffff;
+    position: sticky;
+    top: 72px;
+    height: calc(100vh - 72px);
+    display: flex;
+}
+
+/* Overrides .container's site-wide 1200px cap: the hero text and mesh box
+   should keep growing as the window widens, not stall past 1200px. */
+.about-hero-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    width: 100%;
+    max-width: 1800px;
+    padding: 3rem clamp(1rem, 5vw, 4rem);
+}
+@media (min-width: 768px) {
+    /* True two-column grid: left (intro + mesh) and right (partner
+       paragraphs) each get an equal, real half of the screen — not a
+       fixed-width block that ends up pinned to the far edge. */
+    .about-hero-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+        gap: 3rem;
+    }
+}
+
+.about-hero-left {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.about-hero-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+/* Fills whatever vertical space is left under the intro text — no dead
+   gap, just the intro's own margin-bottom as breathing room. */
+.about-mesh-box {
+    position: relative;
+    flex: 1;
+    min-height: 220px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Right half of the grid — centers the paragraph block within the entire
+   right-hand half of the screen (not pinned to the far edge), so it stays
+   centered as the window widens. */
+.about-hero-right-half {
+    display: flex;
+}
+@media (min-width: 768px) {
+    .about-hero-right-half {
+        align-items: center;
+        justify-content: center;
+    }
+}
+.about-hero-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.75rem;
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .about-hero-side {
+        max-width: 340px;
+    }
+}
+
+/* +60% over the paragraph's old text-2xl/md:text-3xl sizing (100% bumped,
+   then dialed back down 20%). */
+.about-hero-lede {
+    font-family: 'Lora', serif;
+    font-size: 1.9rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    line-height: 1.2;
+    text-align: left;
 }
-.about-tab-btn:hover {
-    color: rgba(255, 255, 255, 0.9);
+@media (min-width: 768px) {
+    .about-hero-lede {
+        font-size: 2.4rem;
+    }
 }
-.about-tab-btn.about-tab-active {
-    color: #ffffff;
-    border-left-color: #174a7c;
-}
-.about-tab-number {
+
+/* "unparalleled" lifts up-and-right with a soft dark drop shadow (a 3D
+   pop off the page) plus a dim blue glow, triggered on hover and held for
+   5s by main.js (see the .is-active toggle there) regardless of whether
+   the cursor stays put. Quick to appear, slow to fade back out — the
+   revert transition lives on the base (non-.is-active) rule since that's
+   the state being transitioned *to* when .is-active is removed. */
+.glow-word {
     display: inline-block;
-    min-width: 1.75rem;
-    color: #93c5fd;
-    font-variant-numeric: tabular-nums;
+    transition: color 1200ms ease, text-shadow 1200ms ease, transform 1200ms ease;
 }
-.about-tab-btn.about-tab-active .about-tab-number {
-    color: #ffffff;
+.glow-word.is-active {
+    color: #1d4ed8;
+    transform: translate(3px, -3px);
+    text-shadow: 2px 3px 3px rgba(11, 31, 58, 0.3), 0 0 8px rgba(37, 99, 235, 0.35), 0 0 18px rgba(37, 99, 235, 0.18);
+    transition: color 250ms ease, text-shadow 250ms ease, transform 250ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+    .glow-word,
+    .glow-word.is-active {
+        transition: none;
+    }
+}
+
+/* Each divider line is its own permanent element, separate from the melt
+   animation below — so all three lines are visible from first paint and
+   only the paragraph text fades/melts in. */
+.about-hero-side-item {
+    display: flex;
+    flex-direction: column;
+}
+.about-hero-side-line {
+    height: 1px;
+    background: rgba(156, 163, 175, 0.45);
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+.about-hero-side p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #d1d5db;
+}
+@media (min-width: 768px) {
+    .about-hero-side p {
+        font-size: 1rem;
+    }
+}
+
+/* Slow "melt" reveal for the 2nd/3rd paragraphs — main.js adds
+   .is-visible as the user scrolls through the pinned hero. Bottom-to-top:
+   they start lower and rise into place as they sharpen/fade in. */
+.about-hero-melt {
+    opacity: 0;
+    transform: translateY(36px);
+    filter: blur(8px);
+    transition: opacity 2200ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 2200ms cubic-bezier(0.16, 1, 0.3, 1),
+        filter 2200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.about-hero-melt.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+    .about-hero-melt {
+        transition: none;
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+
+/* Same glass-card treatment previously shared with the About page's tab
+   panels, for the Contact page's form and office-info blocks. */
+/* Third contact-grid panel: same footprint/height as .contact-panel next
+   to it (the grid's default stretch makes all three match the tallest),
+   but houses the animated triangle mesh instead of text. */
+.contact-mesh-box {
+    position: relative;
+    min-height: 320px;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.03);
+    cursor: var(--cursor-white);
+}
+
+.contact-panel {
+    background: #ffffff;
+    border-radius: 3px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* About page sections melt in as they're scrolled into view (main.js toggles
+   .is-visible via IntersectionObserver), matching the home hero's fade-in. */
+.about-reveal-section {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(6px);
+    transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+        filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.about-reveal-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+@media (prefers-reduced-motion: reduce) {
+    .about-reveal-section {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: none;
+    }
 }
 
 footer {
     flex-shrink: 0;
+}
+
+/* Sub-hero copy fades in on load, and replays via main.js whenever the tab
+   regains focus (visibilitychange / pageshow) or is restored from bfcache. */
+.hero-fade-text {
+    opacity: 0;
+}
+.hero-fade-text.hero-fade-in {
+    animation: hero-fade-in 1500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes hero-fade-in {
+    0% { opacity: 0; transform: translateY(22px); filter: blur(10px); }
+    60% { opacity: 0.85; filter: blur(3px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero-fade-text {
+        opacity: 1;
+        animation: none;
+    }
+}
+
+/* Home page only: just the sub-hero paragraph sized up 25% over the
+   site-wide default. Nav, heading, button, and footer stay at normal size. */
+.home-page .hero-content p {
+    font-size: 1.40625rem; /* text-lg (1.125rem) * 1.25 */
+}
+@media (min-width: 768px) {
+    .home-page .hero-content p {
+        font-size: 1.5625rem; /* md:text-xl (1.25rem) * 1.25 */
+    }
+}
+
+/* Custom cursor: one ring + one center dot that recolors to contrast
+   whatever background it's under — white over the navy hero, the nav bar's
+   own dark navy text color over the white nav bar. Hotspot sits at the
+   ring's center (matches the 14 14 offset). */
+:root {
+    --cursor-white: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='11' fill='none' stroke='%23ffffff' stroke-width='1.6'/><circle cx='14' cy='14' r='1.8' fill='%23ffffff'/></svg>") 14 14, auto;
+    --cursor-blue: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='11' fill='none' stroke='%230b1f3a' stroke-width='1.6'/><circle cx='14' cy='14' r='1.8' fill='%230b1f3a'/></svg>") 14 14, auto;
+    --cursor-scroll: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='11' fill='none' stroke='%23ffffff' stroke-width='1.6'/><path d='M14 9 L14 17 M10.5 13.5 L14 17 L17.5 13.5' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") 14 14, auto;
+}
+body {
+    cursor: var(--cursor-white);
+}
+.hero-section,
+.hero-section a,
+.hero-section button {
+    cursor: var(--cursor-white);
+}
+.site-header,
+.site-header a,
+.site-header button,
+.site-mobile-menu,
+.site-mobile-menu a {
+    cursor: var(--cursor-blue);
+}
+
+/* About page: a down-arrow-in-a-ring cursor over the right half of the
+   pinned hero, signaling to the user that scrolling advances the staged
+   paragraph reveals (and eventually the rest of the page). */
+.about-hero-right-half,
+.about-hero-right-half a {
+    cursor: var(--cursor-scroll);
+}
+
+/* About page: the Mission/Approach/Principles section is on a white
+   background, so it gets the same dark-on-light cursor as the nav bar. */
+.about-page,
+.about-page a {
+    cursor: var(--cursor-blue);
+}
+
+/* ...except the mesh card itself (navy, like the hero), which keeps the
+   white cursor; its white table falls back to the inherited --cursor-blue
+   from .about-page above (plain ring + dot, no arrow). */
+.about-modules-section {
+    cursor: var(--cursor-white);
+}
+
+/* Services page also carries the .about-page class (for shared layout
+   behavior), which would otherwise blanket its navy mesh background in
+   the blue cursor meant for the About page's white section. .services-
+   accordion already overrides back to blue for its own white table. */
+#services {
+    cursor: var(--cursor-white);
+}
+
+/* Same fix for the Contact page: its navy background gets the white
+   cursor; its glass .contact-panel boxes get an explicit --cursor-blue
+   override below (they don't carry .about-page themselves, so they
+   wouldn't inherit it — they'd otherwise inherit the white set here). */
+#contact {
+    cursor: var(--cursor-white);
+}
+.contact-panel,
+.contact-panel a {
+    cursor: var(--cursor-blue);
 }
