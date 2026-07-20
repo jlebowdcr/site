@@ -227,21 +227,16 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     color: #4b5563;
 }
 
-/* Services page: all six services in one white rectangle, laid out side
-   by side (a horizontal accordion, distinct from the About page's
-   vertical .modules-table). Clicking a segment (main.js, [data-seg])
-   grows it — the description fades in and the icon appears bottom-left —
-   while the others compress to equal-width, title-only columns. Padding,
-   title size/position, and layout never change between the two states;
-   only width changes, and clicking the open one again collapses it back. */
-/* Back to filling its container exactly (no overflow past the edges),
-   so its left edge lines up with the "Our Services" heading above it and
-   the right-side gap matches — both flush with the same container. */
+/* Services page: all five services in one white rectangle, stacked as
+   horizontal rows (matches the About page's vertical .modules-table).
+   Clicking a segment (main.js, [data-seg]) grows it — .services-seg-body
+   reveals a row with the description on the left (reaching about the
+   middle of the box) and its animated visual on the right — while any
+   previously open row collapses back. */
 .services-accordion {
     width: 100%;
     display: flex;
     flex-direction: column;
-    height: clamp(384px, 66vh, 768px);
     background: #ffffff;
     border-radius: 3px;
     box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
@@ -249,7 +244,7 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     cursor: var(--cursor-blue);
 }
 .services-seg {
-    flex: 1 1 0%;
+    flex: none;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -258,13 +253,9 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     cursor: var(--cursor-blue);
     position: relative;
     overflow: hidden;
-    transition: flex-grow 1100ms cubic-bezier(0.65, 0, 0.35, 1);
 }
 .services-seg + .services-seg {
     border-top: 1px solid #cbd5e1;
-}
-.services-seg.is-open {
-    flex-grow: 4;
 }
 
 /* Matches the About page table's .modules-row-toggle h3 exactly
@@ -280,20 +271,44 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     text-align: left;
 }
 
+/* Collapses/reveals the description+visual row as one unit via the
+   0fr -> 1fr grid-row trick (same technique as .modules-row-panel), so
+   they grow and shrink together instead of each needing its own height
+   accounting. */
+.services-seg-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 100%;
+    transition: grid-template-rows 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.services-seg.is-open .services-seg-body {
+    grid-template-rows: 1fr;
+}
+.services-seg-body-inner {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
 /* Matches the About page table's .modules-row-panel p exactly
-   (0.95rem/1.6/#4b5563). */
+   (0.95rem/1.6/#4b5563), but capped at half the box's width so it reaches
+   the middle rather than crowding toward the visual on the right. */
 .services-seg-desc {
-    margin: 0.85rem 0 0;
+    margin: 0;
+    padding-top: 0.85rem;
+    flex: 1 1 50%;
+    max-width: 50%;
     font-size: 0.95rem;
     line-height: 1.6;
     color: #4b5563;
     opacity: 0;
-    max-width: 46ch;
     transition: opacity 300ms ease;
 }
 .services-seg.is-open .services-seg-desc {
     opacity: 1;
-    transition: opacity 500ms ease 1100ms;
+    transition: opacity 500ms ease 500ms;
 }
 
 /* Arrow sits top-right, level with the title — same position (relative
@@ -316,27 +331,332 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     transform: rotate(90deg);
 }
 
-/* Icons stay hidden until a segment opens, then appear pinned to its
-   bottom-left corner (not inline with the title, so the title's own
-   position never shifts). */
-.services-seg-icon {
-    position: absolute;
-    left: 1.5rem;
-    bottom: 1.75rem;
-    color: #174a7c;
+/* Each service gets its own animated data-widget (labeled bars, a repo
+   flow loop, a scan-line comparison, a donut with legend, a liquidity
+   area chart) instead of a generic icon — sits on the right side of the
+   revealed row, fading in once its box has grown. */
+.services-seg-visual {
+    flex-shrink: 0;
+    width: 280px;
+    height: 180px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 300ms ease;
 }
-.services-seg.is-open .services-seg-icon {
+.services-seg.is-open .services-seg-visual {
     opacity: 1;
-    transition: opacity 500ms ease 1100ms;
+    transition: opacity 500ms ease 500ms;
 }
+.services-visual-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+@media (max-width: 640px) {
+    .services-seg-body-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+    .services-seg-desc {
+        max-width: 100%;
+    }
+    .services-seg-visual {
+        width: 240px;
+        height: 154px;
+    }
+}
+
+/* Shared chrome for every widget: a light card background (no outline),
+   a title caption, and consistent axis/data-label typography (matches
+   the site body font). */
+.visual-card-bg {
+    fill: #eef1f5;
+}
+.visual-title {
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    fill: #0b1f3a;
+}
+.visual-axis-label {
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 9px;
+    fill: #94a3b8;
+}
+.visual-data-label {
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 9px;
+    fill: #4b5563;
+}
+.visual-callout-text {
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+}
+.visual-grid {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+}
+.visual-baseline {
+    stroke: #cbd5e1;
+    stroke-width: 1;
+}
+
+/* Prime Brokerage & Financing Optimisation: the five donut segments
+   (each broker's share of total margin, unlabeled) resize against one
+   another on a loop, matching the Collateral Mix donut's style. Centered
+   in the card now that the legend is gone. */
+.services-seg.is-open .visual-financing .fin-seg-1 {
+    animation: fin-seg-1 4.5s ease-in-out 1300ms infinite;
+}
+.services-seg.is-open .visual-financing .fin-seg-2 {
+    animation: fin-seg-2 4.5s ease-in-out 1300ms infinite;
+}
+.services-seg.is-open .visual-financing .fin-seg-3 {
+    animation: fin-seg-3 4.5s ease-in-out 1300ms infinite;
+}
+.services-seg.is-open .visual-financing .fin-seg-4 {
+    animation: fin-seg-4 4.5s ease-in-out 1300ms infinite;
+}
+.services-seg.is-open .visual-financing .fin-seg-5 {
+    animation: fin-seg-5 4.5s ease-in-out 1300ms infinite;
+}
+@keyframes fin-seg-1 {
+    0%, 100% { stroke-dashoffset: 0; }
+    50% { stroke-dashoffset: -9; }
+}
+@keyframes fin-seg-2 {
+    0%, 100% { stroke-dashoffset: -98; }
+    50% { stroke-dashoffset: -89; }
+}
+@keyframes fin-seg-3 {
+    0%, 100% { stroke-dashoffset: -170; }
+    50% { stroke-dashoffset: -161; }
+}
+@keyframes fin-seg-4 {
+    0%, 100% { stroke-dashoffset: -229; }
+    50% { stroke-dashoffset: -220; }
+}
+@keyframes fin-seg-5 {
+    0%, 100% { stroke-dashoffset: -281; }
+    50% { stroke-dashoffset: -272; }
+}
+
+/* Repo & Securities Finance: a client-dashboard-style stacked bar chart —
+   each broker's repo balance (dark) and reverse repo balance (light),
+   matching Hazeltree's two-tone "Cash Trend" widget. Both segments in a
+   column resize together (each pair animates the same y/height values
+   used to keep the seam between them touching, rather than a transform
+   anchored on one box) so the whole bar visibly grows or shrinks with no
+   gap at the join. Each column runs its own duration/delay so the three
+   read as independent live data rather than one uniform pulse. */
+.services-seg.is-open .visual-repo .repo-dark-seg.repo-col-1 {
+    animation: repo-dark-1 3.2s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-reverse-seg.repo-col-1 {
+    animation: repo-light-1 3.2s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-dark-seg.repo-col-2 {
+    animation: repo-dark-2 3.8s ease-in-out 1550ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-reverse-seg.repo-col-2 {
+    animation: repo-light-2 3.8s ease-in-out 1550ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-dark-seg.repo-col-3 {
+    animation: repo-dark-3 3.4s ease-in-out 1700ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-reverse-seg.repo-col-3 {
+    animation: repo-light-3 3.4s ease-in-out 1700ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-dark-seg.repo-col-4 {
+    animation: repo-dark-4 3.6s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-reverse-seg.repo-col-4 {
+    animation: repo-light-4 3.6s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-dark-seg.repo-col-5 {
+    animation: repo-dark-5 3.0s ease-in-out 1650ms infinite;
+}
+.services-seg.is-open .visual-repo .repo-reverse-seg.repo-col-5 {
+    animation: repo-light-5 3.0s ease-in-out 1650ms infinite;
+}
+@keyframes repo-dark-1 {
+    0%, 100% { y: 105px; height: 45px; }
+    50% { y: 115px; height: 35px; }
+}
+@keyframes repo-light-1 {
+    0%, 100% { y: 85px; height: 20px; }
+    50% { y: 101px; height: 14px; }
+}
+@keyframes repo-dark-2 {
+    0%, 100% { y: 100px; height: 50px; }
+    50% { y: 90px; height: 60px; }
+}
+@keyframes repo-light-2 {
+    0%, 100% { y: 72px; height: 28px; }
+    50% { y: 57px; height: 33px; }
+}
+@keyframes repo-dark-3 {
+    0%, 100% { y: 120px; height: 30px; }
+    50% { y: 114px; height: 36px; }
+}
+@keyframes repo-light-3 {
+    0%, 100% { y: 92px; height: 28px; }
+    50% { y: 82px; height: 32px; }
+}
+@keyframes repo-dark-4 {
+    0%, 100% { y: 112px; height: 38px; }
+    50% { y: 120px; height: 30px; }
+}
+@keyframes repo-light-4 {
+    0%, 100% { y: 94px; height: 18px; }
+    50% { y: 107px; height: 13px; }
+}
+@keyframes repo-dark-5 {
+    0%, 100% { y: 125px; height: 25px; }
+    50% { y: 120px; height: 30px; }
+}
+@keyframes repo-light-5 {
+    0%, 100% { y: 103px; height: 22px; }
+    50% { y: 93px; height: 27px; }
+}
+
+/* Margin Replication & Analytics: an unlabeled histogram — four securities
+   (deliberately un-named on the x-axis) ranked by total margin consumed,
+   each bar split into three broker segments matching the Broker A/B/C
+   legend above. Each whole bar (all three segments as one rigid group)
+   grows/shrinks from the baseline on its own duration/delay — simpler
+   than tracking each segment's seam individually, and just as effective
+   since the segments' proportions stay intact either way. */
+.visual-margin .hist-bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+}
+.services-seg.is-open .visual-margin .hist-col-1 {
+    animation: hist-bar-pulse 3.2s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-margin .hist-col-2 {
+    animation: hist-bar-pulse 3.6s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-margin .hist-col-3 {
+    animation: hist-bar-pulse 3.0s ease-in-out 1600ms infinite;
+}
+.services-seg.is-open .visual-margin .hist-col-4 {
+    animation: hist-bar-pulse 3.4s ease-in-out 1700ms infinite;
+}
+@keyframes hist-bar-pulse {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.8); }
+}
+
+/* Capital & Cross-Asset Optimisation: a horizontal bar chart of
+   risk-adjusted performance ratios (ties to the description's "improve
+   overall performance ratios"). Each bar grows/shrinks from its fixed
+   left edge on its own duration/delay, matching the other widgets'
+   bar-pulse style. */
+.visual-capital .cap-bar {
+    transform-box: fill-box;
+    transform-origin: left;
+}
+.services-seg.is-open .visual-capital .cap-bar-1 {
+    animation: cap-bar-pulse 2.8s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-capital .cap-bar-2 {
+    animation: cap-bar-pulse 3.2s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-capital .cap-bar-3 {
+    animation: cap-bar-pulse 2.6s ease-in-out 1600ms infinite;
+}
+.services-seg.is-open .visual-capital .cap-bar-4 {
+    animation: cap-bar-pulse 3.0s ease-in-out 1700ms infinite;
+}
+@keyframes cap-bar-pulse {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(0.82); }
+}
+
+/* Treasury & Liquidity Management: a Hazeltree-style "Cash Trend" stacked
+   histogram — four cash categories (Operating, Reserve, Buffer, Excess),
+   each split into an Available (dark) and Reserved (light) segment. Both
+   segments in a column resize together (matching y/height keyframes so
+   the seam between them stays touching, no gap) on their own
+   duration/delay, reading as continuously live data. */
+.services-seg.is-open .visual-treasury .cash-dark-seg.cash-col-1 {
+    animation: cash-dark-1 3.2s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-light-seg.cash-col-1 {
+    animation: cash-light-1 3.2s ease-in-out 1400ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-dark-seg.cash-col-2 {
+    animation: cash-dark-2 3.6s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-light-seg.cash-col-2 {
+    animation: cash-light-2 3.6s ease-in-out 1500ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-dark-seg.cash-col-3 {
+    animation: cash-dark-3 3.0s ease-in-out 1600ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-light-seg.cash-col-3 {
+    animation: cash-light-3 3.0s ease-in-out 1600ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-dark-seg.cash-col-4 {
+    animation: cash-dark-4 3.4s ease-in-out 1700ms infinite;
+}
+.services-seg.is-open .visual-treasury .cash-light-seg.cash-col-4 {
+    animation: cash-light-4 3.4s ease-in-out 1700ms infinite;
+}
+@keyframes cash-dark-1 {
+    0%, 100% { y: 95px; height: 55px; }
+    50% { y: 105px; height: 45px; }
+}
+@keyframes cash-light-1 {
+    0%, 100% { y: 60px; height: 35px; }
+    50% { y: 75px; height: 30px; }
+}
+@keyframes cash-dark-2 {
+    0%, 100% { y: 105px; height: 45px; }
+    50% { y: 98px; height: 52px; }
+}
+@keyframes cash-light-2 {
+    0%, 100% { y: 80px; height: 25px; }
+    50% { y: 68px; height: 30px; }
+}
+@keyframes cash-dark-3 {
+    0%, 100% { y: 115px; height: 35px; }
+    50% { y: 122px; height: 28px; }
+}
+@keyframes cash-light-3 {
+    0%, 100% { y: 95px; height: 20px; }
+    50% { y: 105px; height: 17px; }
+}
+@keyframes cash-dark-4 {
+    0%, 100% { y: 125px; height: 25px; }
+    50% { y: 118px; height: 32px; }
+}
+@keyframes cash-light-4 {
+    0%, 100% { y: 110px; height: 15px; }
+    50% { y: 98px; height: 20px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .services-seg,
+    .services-seg-body,
     .services-seg-arrow,
-    .services-seg-icon,
-    .services-seg-desc {
+    .services-seg-visual,
+    .services-seg-desc,
+    .visual-financing .fin-seg-1,
+    .visual-financing .fin-seg-2,
+    .visual-financing .fin-seg-3,
+    .visual-financing .fin-seg-4,
+    .visual-financing .fin-seg-5,
+    .visual-repo .repo-dark-seg,
+    .visual-repo .repo-reverse-seg,
+    .visual-margin .hist-bar,
+    .visual-capital .cap-bar,
+    .visual-treasury .cash-dark-seg,
+    .visual-treasury .cash-light-seg {
+        animation: none;
         transition: none;
     }
 }
