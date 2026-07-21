@@ -8,6 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Analytics (GA4) - inert until Analytics consent is granted, see cookie-consent.js -->
+    <script type="text/plain" data-cookie-category="analytics" async data-cookie-src="https://www.googletagmanager.com/gtag/js?id=G-GR1MS150F6"></script>
+    <script type="text/plain" data-cookie-category="analytics">
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GR1MS150F6');
+    </script>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -143,13 +151,22 @@
             <h3 class="text-2xl font-semibold mb-4 text-blue-700">2.3 Cookies</h3>
             <p class="text-lg leading-relaxed mb-4">
                 We use strictly necessary cookies/local storage needed to run the Site and to
-                remember your cookie preferences. We also offer an optional Functional category,
-                currently used only for the interactive Google Maps office location on our
-                Contact page — this loads content from Google, which may set its own cookies and
-                receive your IP address, and is only enabled if you consent to it (either via the
-                cookie banner or the "Enable map" button shown in place of the map). We do not
-                currently use analytics or marketing cookies. If this changes in future, we will
-                only activate those categories with your consent.
+                remember your cookie preferences. We also offer two optional categories, both
+                disabled by default and only activated with your consent:
+            </p>
+            <ul class="list-disc list-inside text-lg leading-relaxed mb-4 pl-4">
+                <li><strong>Analytics</strong> — we use Google Analytics to understand how many
+                    people visit the Site, how long they stay, and which source they arrived from
+                    (e.g. a search engine, LinkedIn, or typing our address directly). This shares
+                    data, including your IP address, with Google.</li>
+                <li><strong>Functional</strong> — currently used only for the interactive Google
+                    Maps office location on our Contact page, which loads content from Google and
+                    may set its own cookies. You can enable this specifically via the "Enable map"
+                    button shown in place of the map, without needing to accept every category.</li>
+            </ul>
+            <p class="text-lg leading-relaxed mb-6">
+                We do not currently use marketing cookies. If this changes in future, we will only
+                activate that category with your consent.
             </p>
             <p class="text-lg leading-relaxed mb-6">
                 When you first visit the Site, you will be shown a cookie banner where you can

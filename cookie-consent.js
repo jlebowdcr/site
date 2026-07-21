@@ -22,7 +22,7 @@
         },
         analytics: {
             label: 'Analytics',
-            description: 'Would help us understand how visitors use the site (e.g. Google Analytics). We do not currently use any analytics tools — this toggle is here for transparency and for if we add one in future.',
+            description: 'Used to understand how visitors use the site via Google Analytics — number of visitors, how long they stay, and which source they arrived from (e.g. Google Search, LinkedIn, direct). This shares data with Google and only runs once you consent.',
             locked: false
         },
         marketing: {
