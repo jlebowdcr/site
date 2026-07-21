@@ -32,19 +32,90 @@ if (submitContactForm) {
     });
 }
 
-// About page tab switching (only present on about.html): clicking a label
-// swaps which single panel is shown on the right, and marks that label active.
-const aboutTabButtons = document.querySelectorAll('.about-tab-btn');
-if (aboutTabButtons.length) {
-    const aboutPanels = document.querySelectorAll('.about-tab-panel');
-    aboutTabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.tab;
-            aboutTabButtons.forEach(b => b.classList.remove('about-tab-active'));
-            btn.classList.add('about-tab-active');
-            aboutPanels.forEach(panel => {
-                panel.classList.toggle('about-panel-active', panel.dataset.panel === target);
-            });
+// Sub-hero fade-in (only present on index.html). Replays on initial load,
+// on returning to this tab (visibilitychange), and on bfcache restores
+// (pageshow) so switching back from another tab re-triggers it.
+const heroFadeText = document.querySelector('.hero-fade-text');
+if (heroFadeText) {
+    const playHeroFade = () => {
+        heroFadeText.classList.remove('hero-fade-in');
+        void heroFadeText.offsetWidth; // force reflow to restart the animation
+        heroFadeText.classList.add('hero-fade-in');
+    };
+    playHeroFade();
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) playHeroFade();
+    });
+    window.addEventListener('pageshow', playHeroFade);
+}
+
+// About page scroll reveal (only present on about.html): each section
+// fades/melts in the first time it scrolls into view.
+const aboutRevealSections = document.querySelectorAll('[data-reveal]');
+if (aboutRevealSections.length) {
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                revealObserver.unobserve(entry.target);
+            }
         });
+    }, { threshold: 0.2 });
+    aboutRevealSections.forEach(section => revealObserver.observe(section));
+}
+
+// About page hero (only present on about.html): the hero stays pinned
+// (position: sticky) inside .about-hero-pin-wrap while the user scrolls
+// through its extra height, releasing once that height is used up.
+// Progress is measured from the moment the wrap reaches the sticky
+// "top: 72px" line, so it's independent of absolute page scroll position.
+// Two thresholds stage the "We specialise..." and founder-bio reveals.
+const aboutHeroPinWrap = document.querySelector('.about-hero-pin-wrap');
+if (aboutHeroPinWrap) {
+    const stage1 = document.querySelector('[data-reveal-stage="1"]');
+    const stage2 = document.querySelector('[data-reveal-stage="2"]');
+    const onHeroScroll = () => {
+        const progress = 72 - aboutHeroPinWrap.getBoundingClientRect().top;
+        const vh = window.innerHeight;
+        if (stage1 && progress > vh * 0.15) stage1.classList.add('is-visible');
+        if (stage2 && progress > vh * 0.6) stage2.classList.add('is-visible');
+    };
+    window.addEventListener('scroll', onHeroScroll, { passive: true });
+    onHeroScroll();
+}
+
+// About page's modules table: each row starts collapsed, showing just its
+// title; clicking toggles that row open/shut independently of the others.
+document.querySelectorAll('.collapsible-row').forEach((row) => {
+    const toggle = row.querySelector('.modules-row-toggle');
+    toggle.addEventListener('click', () => {
+        const isOpen = row.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', isOpen);
+    });
+});
+
+// Services page (only present on services.html): a horizontal accordion —
+// clicking a segment expands it while the others compress and slide over;
+// clicking the open one again collapses everything back to equal widths.
+document.querySelectorAll('[data-seg]').forEach((seg) => {
+    seg.addEventListener('click', () => {
+        const alreadyOpen = seg.classList.contains('is-open');
+        document.querySelectorAll('[data-seg]').forEach((s) => s.classList.remove('is-open'));
+        if (!alreadyOpen) seg.classList.add('is-open');
+    });
+});
+
+// About page hero: hovering "unparalleled" holds its glow/lift for a
+// flat 5s (re-hovering restarts the countdown) rather than reverting the
+// instant the cursor leaves, then the CSS transition eases it back out.
+const glowWord = document.querySelector('.glow-word');
+if (glowWord) {
+    let glowTimer = null;
+    glowWord.addEventListener('mouseenter', () => {
+        glowWord.classList.add('is-active');
+        clearTimeout(glowTimer);
+        glowTimer = setTimeout(() => {
+            glowWord.classList.remove('is-active');
+        }, 5000);
     });
 }
