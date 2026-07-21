@@ -32,7 +32,7 @@
         },
         functional: {
             label: 'Functional',
-            description: 'Would remember extra preferences, such as settings for an embedded video or chat widget. We do not currently use any functional cookies — this toggle is here for transparency and for if we add one in future.',
+            description: 'Used for embedded content that enhances the site, such as our interactive Google Maps office location. Loading this content shares your IP address with the provider (e.g. Google) and may set their cookies.',
             locked: false
         }
     };
@@ -66,8 +66,8 @@
     // ---- Turning on consented scripts -------------------------------------
 
     function applyConsent(consent) {
-        var placeholders = document.querySelectorAll('script[type="text/plain"][data-cookie-category]');
-        placeholders.forEach(function (placeholder) {
+        var scriptPlaceholders = document.querySelectorAll('script[type="text/plain"][data-cookie-category]');
+        scriptPlaceholders.forEach(function (placeholder) {
             var category = placeholder.getAttribute('data-cookie-category');
             if (!consent[category] || placeholder.dataset.activated === 'true') {
                 return;
@@ -87,6 +87,20 @@
             }
             placeholder.dataset.activated = 'true';
             placeholder.parentNode.insertBefore(realScript, placeholder.nextSibling);
+        });
+
+        // Embeds (e.g. Google Maps) sit inert with no src attribute until
+        // consent is granted for their category — same "don't run until
+        // consented" idea as the script placeholders above, just for iframes.
+        var iframePlaceholders = document.querySelectorAll('iframe[data-cookie-category][data-cookie-src]');
+        iframePlaceholders.forEach(function (iframe) {
+            var category = iframe.getAttribute('data-cookie-category');
+            if (!consent[category]) return;
+            if (!iframe.getAttribute('src')) {
+                iframe.setAttribute('src', iframe.getAttribute('data-cookie-src'));
+            }
+            var wrapper = iframe.closest('.ds-embed');
+            if (wrapper) wrapper.classList.add('ds-embed-activated');
         });
     }
 
@@ -213,6 +227,18 @@
                 e.preventDefault();
                 openPreferences();
             });
+        });
+
+        // "Enable map" style buttons: consent to just that one category
+        // in-place, without making the visitor open the full panel.
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-enable-category]');
+            if (!btn) return;
+            var category = btn.getAttribute('data-enable-category');
+            var current = getConsent() || { analytics: false, marketing: false, functional: false };
+            current[category] = true;
+            storeConsent(current);
+            hideBanner();
         });
     }
 
