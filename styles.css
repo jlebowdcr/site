@@ -661,23 +661,13 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     }
 }
 
-/* Tall spacer giving the sticky hero below room to stay pinned on screen
-   while the user scrolls through the two staged reveals in the right
-   column; it releases once this wrapper's extra height is used up,
-   continuing into "Our Mission" in the sibling .about-page below. */
 .about-hero-pin-wrap {
     position: relative;
-    height: 210vh;
 }
 
-/* Pinned About intro — position:sticky keeps it visually fixed through
-   both staged reveals before releasing into the rest of the page. */
 .about-hero-section {
     background-color: #0b1f3a;
     color: #ffffff;
-    position: sticky;
-    top: 72px;
-    height: calc(100vh - 72px);
     display: flex;
 }
 
@@ -700,6 +690,29 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
         grid-template-columns: 1fr 1fr;
         align-items: stretch;
         gap: 3rem;
+    }
+
+    /* Pin/reveal-on-scroll only makes sense once the two-column grid above
+       guarantees the intro, mesh and all three paragraphs fit within one
+       screen. Below this breakpoint everything stacks in a single column
+       (see .about-hero-layout's mobile default) and is tall enough that
+       pinning it to a single-screen height would push the later paragraphs
+       permanently off-screen — so mobile just scrolls normally instead. */
+
+    /* Tall spacer giving the sticky hero below room to stay pinned on screen
+       while the user scrolls through the two staged reveals in the right
+       column; it releases once this wrapper's extra height is used up,
+       continuing into "Our Mission" in the sibling .about-page below. */
+    .about-hero-pin-wrap {
+        height: 210vh;
+    }
+
+    /* Pinned About intro — position:sticky keeps it visually fixed through
+       both staged reveals before releasing into the rest of the page. */
+    .about-hero-section {
+        position: sticky;
+        top: 72px;
+        height: calc(100vh - 72px);
     }
 }
 
