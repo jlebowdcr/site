@@ -213,7 +213,13 @@ function initMesh(canvas) {
     }
 
     buildMesh();
-    window.addEventListener('resize', onResize);
+    // ResizeObserver (not just a window 'resize' listener) so the canvas also
+    // rebuilds when its own parent's size settles later for reasons that
+    // aren't a window resize - e.g. a grid-stretched box like .contact-mesh-box
+    // whose height depends on a sibling's content height, which can still be
+    // shifting after web fonts finish loading.
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(heroSection);
     window.addEventListener('scroll', onScroll, { passive: true });
     heroSection.addEventListener('mousemove', onMouseMove);
     heroSection.addEventListener('mouseleave', () => {
