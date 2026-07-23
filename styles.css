@@ -665,10 +665,15 @@ h1, h2, h3, h4, h5, h6, .font-bold, .font-extrabold, .font-semibold {
     position: relative;
 }
 
+/* Below md, this still reads as its own full-bleed "page" (min-height,
+   not a fixed height) but is free to grow taller than one screen so the
+   intro, mesh and all three paragraphs get room to breathe instead of
+   being capped to exactly one viewport and clipped. */
 .about-hero-section {
     background-color: #0b1f3a;
     color: #ffffff;
     display: flex;
+    min-height: calc(100vh - 72px);
 }
 
 /* Overrides .container's site-wide 1200px cap: the hero text and mesh box
